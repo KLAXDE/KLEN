@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portal Cliente – Crédito Boricua</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --blue:#003087;--blue2:#001f5c;--blue3:#1a4db5;--blue-light:#e8eef8;
+      --green:#0a7c59;--green-light:#e6f4f0;
+      --red:#c0392b;--red-light:#fdecea;
+      --gray:#64748b;--border:#dde3ef;--white:#fff;--bg:#f0f4fb;--text:#1a2340;
+    }
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+    /* ── SCREENS ── */
+    .screen{display:none!important}
+    .screen.on{display:block!important}
+    #auth.on{display:flex!important}
+
+    /* ── AUTH ── */
+    #auth{
+      min-height:100vh;
+      background:linear-gradient(160deg,var(--blue2) 0%,var(--blue) 55%,var(--blue3) 100%);
+      align-items:center;justify-content:center;padding:24px;
+    }
+    .abox{
+      background:#fff;border-radius:20px;padding:38px 34px;
+      width:100%;max-width:430px;box-shadow:0 20px 60px rgba(0,0,48,.3);
+    }
+    .alogo{text-align:center;margin-bottom:22px}
+    .alogo img{height:64px;width:auto}
+    .tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:24px}
+    .tab{flex:1;padding:10px;text-align:center;font-weight:600;font-size:.88rem;cursor:pointer;color:var(--gray);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s}
+    .tab.on{color:var(--blue);border-bottom-color:var(--blue)}
+    .aform{display:none}
+    .aform.on{display:block}
+    .aform h2{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--blue);margin-bottom:3px}
+    .aform .sub{font-size:.82rem;color:var(--gray);margin-bottom:20px}
+    .fld{margin-bottom:14px}
+    .fld label{display:block;font-size:.73rem;font-weight:700;color:var(--blue);margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px}
+    .fld input,.fld select{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:.91rem;font-family:'Inter',sans-serif;color:var(--text);background:#f8faff;outline:none;transition:border-color .2s,box-shadow .2s}
+    .fld input:focus,.fld select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,48,135,.08);background:#fff}
+    .abtn{width:100%;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:9px;font-size:.97rem;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:background .2s;margin-top:6px}
+    .abtn:hover{background:var(--blue2)}
+    .aerr{display:none;color:var(--red);font-size:.8rem;text-align:center;margin-top:10px;padding:8px 12px;background:var(--red-light);border-radius:7px}
+    .asucc{display:none;color:var(--green);font-size:.8rem;text-align:center;margin-top:10px;padding:8px 12px;background:var(--green-light);border-radius:7px}
+
+    /* ── DASHBOARD ── */
+    #dash{min-height:100vh}
+    .dnav{background:var(--blue);height:64px;padding:0 4%;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(0,0,48,.2);position:sticky;top:0;z-index:50}
+    .dnav img{height:44px;width:auto}
+    .dnav-r{display:flex;align-items:center;gap:10px}
+    .ubadge{background:rgba(255,255,255,.15);color:#fff;font-size:.79rem;font-weight:600;padding:6px 13px;border-radius:20px}
+    .lbtn{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.3);padding:6px 13px;border-radius:7px;font-size:.79rem;font-weight:600;cursor:pointer;transition:background .2s}
+    .lbtn:hover{background:rgba(255,255,255,.2)}
+
+    .dlayout{display:flex;min-height:calc(100vh - 64px)}
+    .sidebar{width:210px;background:var(--blue2);padding:22px 0;flex-shrink:0}
+    .sitem{display:flex;align-items:center;gap:10px;padding:12px 20px;color:rgba(255,255,255,.7);font-size:.86rem;font-weight:500;cursor:pointer;transition:all .2s;border-left:3px solid transparent}
+    .sitem:hover{background:rgba(255,255,255,.07);color:#fff}
+    .sitem.on{background:rgba(255,255,255,.13);color:#fff;border-left-color:#fff;font-weight:700}
+
+    .dcontent{flex:1;padding:28px 4%;overflow-x:hidden}
+    .panel{display:none}
+    .panel.on{display:block}
+    .ptitle{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--blue);margin-bottom:22px}
+
+    /* WELCOME BANNER */
+    .wbanner{background:linear-gradient(135deg,var(--blue) 0%,var(--blue3) 100%);border-radius:16px;padding:24px 26px;margin-bottom:20px;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
+    .wbanner h2{font-family:'Playfair Display',serif;font-size:1.35rem;margin-bottom:4px}
+    .wbanner p{font-size:.83rem;color:rgba(255,255,255,.8)}
+    .wbadge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:14px 20px;text-align:center;min-width:140px}
+    .wnum{font-size:1.55rem;font-weight:800}
+    .wlbl{font-size:.69rem;color:rgba(255,255,255,.75);margin-top:3px}
+
+    /* CARDS */
+    .crow{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:18px}
+    .card{background:#fff;border-radius:14px;padding:20px 18px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.04)}
+    .cico{font-size:1.4rem;margin-bottom:8px}
+    .clbl{font-size:.68rem;font-weight:700;color:var(--gray);letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px}
+    .cval{font-size:1.55rem;font-weight:800;color:var(--blue)}
+    .cval.g{color:var(--green)}
+    .cval.r{color:var(--red)}
+    .cval.na{font-size:1rem;color:var(--gray)}
+    .csub{font-size:.74rem;color:var(--gray);margin-top:3px}
+
+    /* PROGRESS */
+    .pbg{background:var(--blue-light);border-radius:8px;height:10px;overflow:hidden;margin-top:8px}
+    .pfill{background:var(--green);height:10px;border-radius:8px;transition:width .8s ease}
+
+    /* TABLE */
+    .tcard{background:#fff;border-radius:14px;border:1px solid var(--border);overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+    .thead{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .thead h3{font-size:.96rem;font-weight:700;color:var(--blue)}
+    .table-responsive{width:100%;overflow-x:auto}
+    table{width:100%;border-collapse:collapse;min-width:500px}
+    th{background:#f4f7fd;padding:10px 15px;text-align:left;font-size:.68rem;font-weight:700;color:var(--gray);letter-spacing:.8px;text-transform:uppercase}
+    td{padding:12px 15px;font-size:.85rem;border-top:1px solid var(--border)}
+    tr:hover td{background:#fafbff}
+    .badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:.69rem;font-weight:700}
+    .bg{background:var(--green-light);color:var(--green)}
+    .bb{background:var(--blue-light);color:var(--blue)}
+    .empty-msg{text-align:center;padding:32px;color:var(--gray);font-size:.9rem}
+
+    /* SIMULATOR */
+    .scard{background:#fff;border-radius:14px;padding:26px;border:1px solid var(--border);max-width:560px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+    .scard h3{font-size:.97rem;font-weight:700;color:var(--blue);margin-bottom:18px}
+    .sfld{margin-bottom:14px}
+    .sfld label{display:block;font-size:.72rem;font-weight:700;color:var(--blue);margin-bottom:4px;text-transform:uppercase}
+    .sfld input,.sfld select{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.9rem;font-family:'Inter',sans-serif;outline:none;background:#f8faff;transition:border-color .2s}
+    .sfld input:focus,.sfld select:focus{border-color:var(--blue);background:#fff}
+    .sbtn{width:100%;padding:12px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:.92rem;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;margin-top:4px}
+    .sbtn:hover{background:var(--blue2)}
+    .sres{margin-top:18px;padding:18px;background:var(--blue-light);border-radius:12px;border:1px solid #c7d4f8;display:none}
+    .sres h4{font-size:.75rem;font-weight:700;color:var(--blue);margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px}
+    .srow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #dde3ef;font-size:.85rem}
+    .srow:last-child{border-bottom:none;font-weight:700;color:var(--blue);font-size:.9rem}
+
+    /* PROFILE */
+    .pcrd{background:#fff;border-radius:14px;padding:26px;border:1px solid var(--border);max-width:500px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+    .pavatar{width:66px;height:66px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.7rem;color:#fff;margin-bottom:18px;font-weight:700}
+    .prow{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border);font-size:.87rem}
+    .prow:last-child{border-bottom:none}
+    .prow span:first-child{color:var(--gray);font-weight:500}
+    .prow span:last-child{font-weight:600}
+
+    /* MOBILE NAV TRIGGER */
+    .mnav-toggle{display:none;background:none;border:none;color:#white;font-size:1.5rem;cursor:pointer}
+
+    @media(max-width:768px){
+      .mnav-toggle{display:block;color:#fff}
+      .sidebar{display:none;position:absolute;top:64px;left:0;width:100%;z-index:40;box-shadow:0 4px 10px rgba(0,0,0,0.1)}
+      .sidebar.open{display:block}
+      .dlayout{flex-direction:column}
+      .dcontent{padding:18px 4%}
+      .crow{grid-template-columns:1fr 1fr}
+      .wbanner{flex-direction:column;align-items:stretch}
+      .wbadge{margin-top:10px}
+      .abox{padding:28px 20px}
+    }
+    @media(max-width:480px){
+      .crow{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ AUTH SCREEN ── -->
+<div id="auth" class="screen on">
+  <div class="abox">
+    <div class="alogo">
+      <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 60'><text x='10' y='42' font-family='Playfair Display' font-weight='900' font-size='26' fill='%23003087'>Crédito</text><text x='102' y='42' font-family='Inter' font-weight='400' font-size='24' fill='%2364748b'>Boricua</text></svg>" alt="Crédito Boricua"/>
+    </div>
+    <div class="tabs">
+      <div class="tab on" onclick="switchAuthTab('login')">Iniciar Sesión</div>
+      <div class="tab" onclick="switchAuthTab('register')">Registrarse</div>
+    </div>
+    
+    <!-- Login Form -->
+    <div id="login-form" class="aform on">
+      <h2>Bienvenido de vuelta</h2>
+      <div class="sub">Acceda de forma segura a su banca móvil.</div>
+      <div class="fld">
+        <label>Correo Electrónico</label>
+        <input type="email" id="login-email" placeholder="ejemplo@correo.com" value="cliente@boricua.com">
+      </div>
+      <div class="fld">
+        <label>Contraseña</label>
+        <input type="password" id="login-pass" placeholder="••••••••" value="123456">
+      </div>
+      <button class="abtn" onclick="handleLogin()">Ingresar al Portal</button>
+      <div id="login-error" class="aerr"></div>
+    </div>
+
+    <!-- Register Form -->
+    <div id="register-form" class="aform">
+      <h2>Crear una Cuenta</h2>
+      <div class="sub">Complete sus datos para registrarse en el sistema.</div>
+      <div class="fld">
+        <label>Nombre Completo</label>
+        <input type="text" id="reg-name" placeholder="Juan Pérez">
+      </div>
+      <div class="fld">
+        <label>Correo Electrónico</label>
+        <input type="email" id="reg-email" placeholder="ejemplo@correo.com">
+      </div>
+      <div class="fld">
+        <label>Contraseña</label>
+        <input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres">
+      </div>
+      <button class="abtn" onclick="handleRegister()">Registrar Cuenta</button>
+      <div id="register-error" class="aerr"></div>
+      <div id="register-success" class="asucc"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DASHBOARD SCREEN ── -->
+<div id="dash" class="screen">
+  <nav class="dnav">
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <button class="mnav-toggle" onclick="toggleMobileMenu()">☰</button>
+      <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 60'><text x='10' y='42' font-family='Playfair Display' font-weight='900' font-size='26' fill='%23ffffff'>Crédito</text><text x='102' y='42' font-family='Inter' font-weight='400' font-size='24' fill='%23e8eef8'>Boricua</text></svg>" alt="Crédito Boricua"/>
+    </div>
+    <div class="dnav-r">
+      <span class="ubadge" id="user-display">Cliente Autenticado</span>
+      <button class="lbtn" onclick="handleLogout()">Salir</button>
+    </div>
+  </nav>
+
+  <div class="dlayout">
+    <aside class="sidebar" id="sidebar-menu">
+      <div class="sitem on" id="menu-resumen" onclick="switchPanel('resumen')">📊 Resumen General</div>
+      <div class="sitem" id="menu-transferencia" onclick="switchPanel('transferencia')">💸 Transferencia de Fondos</div>
+      <div class="sitem" id="menu-simulador" onclick="switchPanel('simulador')">🧮 Simulador de Préstamos</div>
+      <div class="sitem" id="menu-perfil" onclick="switchPanel('perfil')">👤 Mi Perfil</div>
+    </aside>
+
+    <main class="dcontent">
+      <!-- PANEL: RESUMEN -->
+      <div id="panel-resumen" class="panel on">
+        <h1 class="ptitle">Resumen de Cuentas</h1>
+        <div class="wbanner">
+          <div>
+            <h2>¡Hola de nuevo!</h2>
+            <p>Bienvenido a su resumen financiero diario estructurado de manera segura.</p>
+          </div>
+          <div class="wbadge">
+            <div class="wnum">$5,240.50</div>
+            <div class="wlbl">BALANCE DISPONIBLE</div>
+          </div>
+        </div>
+
+        <div class="crow">
+          <div class="card">
+            <div class="cico">💳</div>
+            <div class="clbl">Préstamo Activo</div>
+            <div class="cval" id="card-loan-val">$12,500.00</div>
+            <div class="csub">Monto inicial adjudicado</div>
+          </div>
+          <div class="card">
+            <div class="cico">📈</div>
+            <div class="clbl">Progreso de Pago</div>
+            <div class="cval g" id="card-prog-val">36%</div>
+            <div class="pbg"><div class="pfill" id="card-prog-fill" style="width: 36%;"></div></div>
+          </div>
+          <div class="card">
+            <div class="cico">📅</div>
+            <div class="clbl">Próximo Pago</div>
+            <div class="cval r">$245.18</div>
+            <div class="csub">Vence el 01 de Prox. Mes</div>
+          </div>
+        </div>
+
+        <div class="tcard">
+          <div class="thead">
+            <h3>Historial de Transacciones Recientes</h3>
+          </div>
+          <div class="table-responsive">
+            <table id="trans-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Tipo</th>
+                  <th>Detalle / Banco</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody id="trans-body">
+                <!-- Se inyecta dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANEL: TRANSFERENCIA DE FONDOS -->
+      <div id="panel-transferencia" class="panel">
+        <h1 class="ptitle">Transferencia de Fondos</h1>
+        
+        <div class="scard" style="max-width: 620px;">
+          <h3>Información Bancaria del Cliente</h3>
+          
+          <div id="transfer-success" class="asucc" style="margin-bottom: 15px; display: none;"></div>
+          <div id="transfer-error" class="aerr" style="margin-bottom: 15px; display: none;"></div>
+
+          <div class="sfld">
+            <label for="bank-holder">Nombre del titular de la cuenta</label>
+            <input type="text" id="bank-holder" placeholder="Ej. Juan Pérez Cancel">
+          </div>
+          
+          <div class="sfld">
+            <label for="bank-account">Número de cuenta bancaria</label>
+            <input type="text" id="bank-account" placeholder="Solo números permitidos" maxlength="20">
+          </div>
+          
+          <div class="sfld">
+            <label for="bank-routing">Número de ruta (ABA Routing Number)</label>
+            <input type="text" id="bank-routing" placeholder="Exactamente 9 dígitos numéricos" maxlength="9">
+          </div>
+          
+          <div class="sfld">
+            <label for="bank-receiver">Banco receptor</label>
+            <select id="bank-receiver">
+              <option value="" disabled selected>Seleccione una institución financiera</option>
+              <option value="Banco Popular de Puerto Rico">Banco Popular de Puerto Rico</option>
+              <option value="FirstBank Puerto Rico">FirstBank Puerto Rico</option>
+              <option value="Oriental Bank">Oriental Bank</option>
+              <option value="Santander Puerto Rico">Santander Puerto Rico</option>
+              <option value="Caribbean Bank">Caribbean Bank</option>
+              <option value="Citi Puerto Rico">Citi Puerto Rico</option>
+              <option value="Scotiabank Puerto Rico">Scotiabank Puerto Rico</option>
+              <option value="Pentagon Federal Credit Union (PenFed)">Pentagon Federal Credit Union (PenFed)</option>
+              <option value="Cooperativa de Ahorro y Crédito de Puerto Rico">Cooperativa de Ahorro y Crédito de Puerto Rico</option>
+              <option value="Banco Cooperativo de Puerto Rico">Banco Cooperativo de Puerto Rico</option>
+            </select>
+          </div>
+
+          <button class="sbtn" onclick="processTransfer()">Solicitar Transferencia</button>
+        </div>
+      </div>
+
+      <!-- PANEL: SIMULADOR DE PRÉSTAMOS -->
+      <div id="panel-simulador" class="panel">
+        <h1 class="ptitle">Simulador de Préstamos</h1>
+        <div class="scard">
+          <h3>Calcule su Cuota Mensual Estimada</h3>
+          <div class="sfld">
+            <label>Monto Solicitado ($)</label>
+            <input type="number" id="sim-amount" placeholder="Ej. 5000" value="5000">
+          </div>
+          <div class="sfld">
+            <label>Tasa de Interés Anual (APR %)</label>
+            <select id="sim-rate">
+              <option value="6.99">6.99% - Excelente Crédito</option>
+              <option value="8.49" selected>8.49% - Crédito Preferencial</option>
+              <option value="11.99">11.99% - Crédito Regular</option>
+              <option value="14.99">14.99% - Sin Historial Estable</option>
+            </select>
+          </div>
+          <div class="sfld">
+            <label>Término de Amortización</label>
+            <select id="sim-term">
+              <option value="12">12 Meses (1 Año)</option>
+              <option value="24">24 Meses (2 Años)</option>
+              <option value="36" selected>36 Meses (3 Años)</option>
+              <option value="48">48 Meses (4 Años)</option>
+              <option value="60">60 Meses (5 Años)</option>
+            </select>
+          </div>
+          <button class="sbtn" onclick="calculateLoan()">Calcular Simulación</button>
+
+          <div class="sres" id="loan-result">
+            <h4>Resultado Analítico</h4>
+            <div class="srow"><span>Pago Mensual Principal e Interés:</span><span id="res-monthly">$-.--</span></div>
+            <div class="srow"><span>Total de Intereses a Pagar:</span><span id="res-interest">$-.--</span></div>
+            <div class="srow"><span>Monto Bruto Retornable:</span><span id="res-total">$-.--</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANEL: MI PERFIL -->
+      <div id="panel-perfil" class="panel">
+        <h1 class="ptitle">Perfil de Usuario</h1>
+        <div class="pcrd">
+          <div class="pavatar" id="profile-avatar">U</div>
+          <div class="prow"><span>Nombre Completo:</span><span id="prof-name">Usuario Conectado</span></div>
+          <div class="prow"><span>Identificador Electrónico:</span><span id="prof-email">correo@servidor.com</span></div>
+          <div class="prow"><span>Jurisdicción Territorial:</span><span>Puerto Rico (E.U.)</span></div>
+          <div class="prow"><span>Estatus de Cuenta:</span><span style="color: var(--green)">Verificado Oficial</span></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ══ SCRIPT CORE INTERACTIVO Y PERSISTENTE ── -->
+<script>
+  // --- INICIALIZACIÓN DE VARIABLES GLOBALES ---
+  let currentUser = JSON.parse(localStorage.getItem('cb_current_user')) || null;
+  let transactions = JSON.parse(localStorage.getItem('cb_transactions')) || [];
+
+  // Datos base por defecto para el historial si localStorage se encuentra vacío
+  const defaultTransactions = [
+    { fecha: '2026-07-01', tipo: 'Pago de Préstamo', banco: 'Abono Cuenta Boricua', estado: 'Procesado' },
+    { fecha: '2026-06-15', tipo: 'Depósito Nómina', banco: 'Banco Popular PR', estado: 'Procesado' }
+  ];
+
+  window.addEventListener('DOMContentLoaded', () => {
+    // Si no existen transacciones en memoria local, inicializamos con los valores por defecto
+    if (transactions.length === 0) {
+      transactions = defaultTransactions;
+      localStorage.setItem('cb_transactions', JSON.stringify(transactions));
+    }
+    
+    // Filtro restrictivo en tiempo real para el campo de número de cuenta (solo números)
+    const accInput = document.getElementById('bank-account');
+    accInput.addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    // Filtro restrictivo en tiempo real para el número de ruta (solo números)
+    const routingInput = document.getElementById('bank-routing');
+    routingInput.addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    // Evaluación inicial del estado de la sesión
+    checkSession();
+  });
+
+  function checkSession() {
+    if (currentUser) {
+      document.getElementById('auth').classList.remove('on');
+      document.getElementById('dash').classList.add('on');
+      document.getElementById('user-display').innerText = currentUser.name;
+      
+      // Actualizar datos visibles en panel perfil
+      document.getElementById('prof-name').innerText = currentUser.name;
+      document.getElementById('prof-email').innerText = currentUser.email;
+      document.getElementById('profile-avatar').innerText = currentUser.name.charAt(0).toUpperCase();
+
+      renderTransactions();
+    } else {
+      document.getElementById('auth').classList.add('on');
+      document.getElementById('dash').classList.remove('on');
+    }
+  }
+
+  // --- NAVEGACIÓN ENTRE TABS DE AUTENTICACIÓN ---
+  function switchAuthTab(tab) {
+    const tabs = document.querySelectorAll('.tab');
+    const forms = document.querySelectorAll('.aform');
+    
+    tabs.forEach(t => t.classList.remove('on'));
+    forms.forEach(f => f.classList.remove('on'));
+    
+    // Limpieza preventiva de mensajes de error o éxito anteriores
+    document.getElementById('login-error').style.display = 'none';
+    document.getElementById('register-error').style.display = 'none';
+    document.getElementById('register-success').style.display = 'none';
+
+    if (tab === 'login') {
+      tabs[0].classList.add('on');
+      document.getElementById('login-form').classList.add('on');
+    } else {
+      tabs[1].classList.add('on');
+      document.getElementById('register-form').classList.add('on');
+    }
+  }
+
+  // --- OPERACIONES DE LOGIN Y REGISTRO ---
+  function handleLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    const pass = document.getElementById('login-pass').value.trim();
+    const errorDiv = document.getElementById('login-error');
+
+    if (!email || !pass) {
+      showElementError(errorDiv, 'Por favor, cumplimente todos los campos obligatorios.');
+      return;
+    }
+
+    // Validación simulación de cuenta
+    currentUser = { name: 'Light', email: email };
+    localStorage.setItem('cb_current_user', JSON.stringify(currentUser));
+    errorDiv.style.display = 'none';
+    checkSession();
+  }
+
+  function handleRegister() {
+    const name = document.getElementById('reg-name').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const pass = document.getElementById('reg-pass').value.trim();
+    const errorDiv = document.getElementById('register-error');
+    const successDiv = document.getElementById('register-success');
+
+    if (!name || !email || !pass) {
+      successDiv.style.display = 'none';
+      showElementError(errorDiv, 'Todos los campos son estrictamente requeridos para el alta.');
+      return;
+    }
+
+    if (pass.length < 6) {
+      successDiv.style.display = 'none';
+      showElementError(errorDiv, 'La contraseña debe poseer al menos 6 caracteres.');
+      return;
+    }
+
+    errorDiv.style.display = 'none';
+    successDiv.innerText = 'Registro procesado. Ya puede iniciar sesión.';
+    successDiv.style.display = 'block';
+    
+    // Limpieza de campos post-registro exitoso
+    document.getElementById('reg-name').value = '';
+    document.getElementById('reg-email').value = '';
+    document.getElementById('reg-pass').value = '';
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('cb_current_user');
+    currentUser = null;
+    checkSession();
+    switchPanel('resumen'); // Resetea la navegación interna a la pestaña inicial
+  }
+
+  // --- NAVEGACIÓN EN SIDEBAR (DASHBOARD PANELS) ---
+  function switchPanel(panelId) {
+    const items = document.querySelectorAll('.sitem');
+    const panels = document.querySelectorAll('.panel');
+    
+    items.forEach(item => item.classList.remove('on'));
+    panels.forEach(panel => panel.classList.remove('on'));
+    
+    document.getElementById(`menu-${panelId}`).classList.add('on');
+    document.getElementById(`panel-${panelId}`).classList.add('on');
+
+    // Cierra automáticamente la barra lateral en configuraciones de dispositivos móviles
+    document.getElementById('sidebar-menu').classList.remove('open');
+  }
+
+  function toggleMobileMenu() {
+    const sidebar = document.getElementById('sidebar-menu');
+    sidebar.classList.toggle('open');
+  }
+
+  // --- LÓGICA DE LA TABLA DE TRANSACCIONES ---
+  function renderTransactions() {
+    const tbody = document.getElementById('trans-body');
+    tbody.innerHTML = '';
+
+    if (transactions.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" class="empty-msg">No se registran transferencias o movimientos recientes.</td></tr>';
+      return;
+    }
+
+    // Ordenamos cronológicamente inversas para visualizar la más reciente en la cima de la tabla
+    const displayList = [...transactions].reverse();
+
+    displayList.forEach(t => {
+      const tr = document.createElement('tr');
+      
+      const tdFecha = document.createElement('td');
+      tdFecha.innerText = t.fecha;
+      
+      const tdTipo = document.createElement('td');
+      tdTipo.innerText = t.tipo;
+      
+      const tdBanco = document.createElement('td');
+      tdBanco.innerText = t.banco;
+      
+      const tdEstado = document.createElement('td');
+      const spanBadge = document.createElement('span');
+      spanBadge.innerText = t.estado;
+      
+      // Aplicar estilos nativos según la naturaleza del estado
+      if (t.estado === 'Pendiente') {
+        spanBadge.className = 'badge bb';
+      } else {
+        spanBadge.className = 'badge bg';
+      }
+      
+      tdEstado.appendChild(spanBadge);
+      tr.appendChild(tdFecha);
+      tr.appendChild(tdTipo);
+      tr.appendChild(tdBanco);
+      tr.appendChild(tdEstado);
+      
+      tbody.appendChild(tr);
+    });
+  }
+
+  // --- PROCESAMIENTO Y VALIDACIÓN DE TRANSFERENCIAS DE FONDOS ---
+  function processTransfer() {
+    const holder = document.getElementById('bank-holder').value.trim();
+    const account = document.getElementById('bank-account').value.trim();
+    const routing = document.getElementById('bank-routing').value.trim();
+    const receiver = document.getElementById('bank-receiver').value;
+    
+    const errDiv = document.getElementById('transfer-error');
+    const succDiv = document.getElementById('transfer-success');
+
+    // 1. Verificación integral de campos completados
+    if (!holder || !account || !routing || !receiver) {
+      succDiv.style.display = 'none';
+      showElementError(errDiv, 'Error: Todos los campos solicitados son obligatorios para tramitar los fondos.');
+      return;
+    }
+
+    // 2. Validación de número de cuenta (comprobar que no esté vacío y contenga dígitos)
+    if (!/^\d+$/.test(account)) {
+      succDiv.style.display = 'none';
+      showElementError(errDiv, 'Error: El número de cuenta bancaria provisto debe contener estrictamente caracteres numéricos.');
+      return;
+    }
+
+    // 3. Validación de número de ruta (Debe poseer exactamente 9 dígitos)
+    if (routing.length !== 9 || !/^\d{9}$/.test(routing)) {
+      succDiv.style.display = 'none';
+      showElementError(errDiv, 'Error: El número de ruta (ABA) es inválido. Debe constar de exactamente 9 dígitos numéricos.');
+      return;
+    }
+
+    // Estructurar la información técnica para el almacenamiento local persistente
+    const transferData = {
+      titular: holder,
+      numeroCuenta: account,
+      rutaABA: routing,
+      bancoSeleccionado: receiver,
+      timestamp: new Date().toISOString()
+    };
+
+    // Almacenamiento indexado en localStorage de la solicitud específica
+    const currentTransfers = JSON.parse(localStorage.getItem('cb_stored_transfers_logs')) || [];
+    currentTransfers.push(transferData);
+    localStorage.setItem('cb_stored_transfers_logs', JSON.stringify(currentTransfers));
+
+    // Obtención de la fecha actual en formato legible AAAA-MM-DD
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    let mm = today.getMonth() + 1;
+    let dd = today.getDate();
+    if (dd < 10) dd = '0' + dd;
+    if (mm < 10) mm = '0' + mm;
+    const formattedDate = `${yyyy}-${mm}-${dd}`;
+
+    // Adición del registro respectivo en el array global de transacciones
+    transactions.push({
+      fecha: formattedDate,
+      tipo: 'Transferencia Bancaria',
+      banco: receiver,
+      estado: 'Pendiente'
+    });
+
+    // Sincronización final del historial en el almacenamiento local del dispositivo
+    localStorage.setItem('cb_transactions', JSON.stringify(transactions));
+
+    // Feedback de éxito y reinicio de los controles del formulario
+    errDiv.style.display = 'none';
+    succDiv.innerText = 'Solicitud de transferencia enviada correctamente.';
+    succDiv.style.display = 'block';
+
+    // Limpieza de inputs del formulario
+    document.getElementById('bank-holder').value = '';
+    document.getElementById('bank-account').value = '';
+    document.getElementById('bank-routing').value = '';
+    document.getElementById('bank-receiver').value = '';
+
+    // Actualización inmediata de los componentes gráficos del panel principal
+    renderTransactions();
+  }
+
+  // Métodos utilitarios de manipulación del DOM
+  function showElementError(element, message) {
+    element.innerText = message;
+    element.style.display = 'block';
+  }
+
+  // --- LÓGICA ADICIONAL: SIMULADOR DE PRÉSTAMOS NATIVO ---
+  function calculateLoan() {
+    const amount = parseFloat(document.getElementById('sim-amount').value);
+    const annualRate = parseFloat(document.getElementById('sim-rate').value);
+    const months = parseInt(document.getElementById('sim-term').value);
+    const resDiv = document.getElementById('loan-result');
+
+    if (isNaN(amount) || amount <= 0) {
+      alert('Por favor introduzca un monto válido superior a 0.');
+      return;
+    }
+
+    const monthlyRate = (annualRate / 100) / 12;
+    // Fórmula de amortización constante (Cuota fija o método francés)
+    const monthlyPayment = (amount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months));
+    const totalRepayment = monthlyPayment * months;
+    const totalInterest = totalRepayment - amount;
+
+    document.getElementById('res-monthly').innerText = `$${monthlyPayment.toFixed(2)}`;
+    document.getElementById('res-interest').innerText = `$${totalInterest.toFixed(2)}`;
+    document.getElementById('res-total').innerText = `$${totalRepayment.toFixed(2)}`;
+    
+    resDiv.style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
