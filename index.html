@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crédito Boricua - Portal de Crédito Profesional</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Intégration d'icônes via Boxicons (sans framework lourd) -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+
+    <!-- ================= AUTHENTICATION CONTAINER ================= -->
+    <div id="auth-container" class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-header">
+                <i class='bx bxs-shield-quarter logo-icon'></i>
+                <h1>Crédito Boricua</h1>
+                <p>Portal de Crédito Profesional</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form">
+                <h2>Iniciar Sesión</h2>
+                <div class="form-group">
+                    <label for="login-email">Correo Electrónico</label>
+                    <input type="email" id="login-email" required placeholder="ejemplo@empresa.com">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Contraseña</label>
+                    <input type="password" id="login-password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary">Ingresar de Forma Segura</button>
+                <p class="auth-switch">¿No tiene una cuenta? <a href="#" id="to-register">Regístrese aquí</a></p>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" class="auth-form hidden">
+                <h2>Solicitud de Crédito</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="reg-name">Nombre Completo</label>
+                        <input type="text" id="reg-name" required placeholder="Juan Pérez">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">Correo Electrónico</label>
+                        <input type="email" id="reg-email" required placeholder="juan@ejemplo.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-phone">Teléfono</label>
+                        <input type="tel" id="reg-phone" required placeholder="787-123-4567">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-amount">Monto Solicitado ($)</label>
+                        <input type="number" id="reg-amount" min="1000" required placeholder="50000">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-term">Plazo (meses)</label>
+                        <input type="number" id="reg-term" min="1" required placeholder="24">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Contraseña</label>
+                        <input type="password" id="reg-password" required placeholder="••••••••">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Enviar Solicitud y Registrarse</button>
+                <p class="auth-switch">¿Ya tiene cuenta? <a href="#" id="to-login">Inicie sesión</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= DASHBOARD CONTAINER ================= -->
+    <div id="dashboard-container" class="dashboard-wrapper hidden">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <i class='bx bxs-shield-quarter'></i>
+                <span>Crédito Boricua</span>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item active" data-target="sec-resumen">
+                    <i class='bx bx-grid-alt'></i> Resumen
+                </a>
+                <a href="#" class="menu-item" data-target="sec-transferencia">
+                    <i class='bx bx-transfer'></i> Transferencia
+                </a>
+                <a href="#" class="menu-item" data-target="sec-historial">
+                    <i class='bx bx-history'></i> Historial
+                </a>
+                <a href="#" class="menu-item" data-target="sec-perfil">
+                    <i class='bx bx-user'></i> Perfil Comercial
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="btn-logout" class="btn-logout">
+                    <i class='bx bx-log-out'></i> Cerrar Sesión
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="topbar">
+                <div class="welcome-msg">
+                    <h2 id="user-welcome">Bienvenido, Usuario</h2>
+                    <p>Portal Corporativo de Líneas de Crédito</p>
+                </div>
+                <div class="status-badge">
+                    <span class="dot"></span> Estado: <strong id="credit-status">Aprobado Activo</strong>
+                </div>
+            </header>
+
+            <!-- Section: Resumen -->
+            <section id="sec-resumen" class="content-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class='bx bx-check-shield'></i></div>
+                        <div class="stat-info">
+                            <h3>Crédito Aprobado</h3>
+                            <p id="stat-approved">$0.00</p>
+                        </div>
+                    </div>
+                    <div class="stat-card accent">
+                        <div class="stat-icon"><i class='bx bx-wallet'></i></div>
+                        <div class="stat-info">
+                            <h3>Saldo Disponible</h3>
+                            <p id="stat-available">$0.00</p>
+                        </div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-icon"><i class='bx bx-trending-up'></i></div>
+                        <div class="stat-info">
+                            <h3>Crédito Utilizado</h3>
+                            <p id="stat-used">$0.00</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class='bx bx-receipt'></i></div>
+                        <div class="stat-info">
+                            <h3>Pagos Realizados</h3>
+                            <p id="stat-payments">$0.00</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Transferencia -->
+            <section id="sec-transferencia" class="content-section hidden">
+                <div class="card">
+                    <h2>Transferencia de Fondos (Disposición de Crédito)</h2>
+                    <p class="card-subtitle">Retire fondos de su línea de crédito directo a su cuenta bancaria comercial.</p>
+                    
+                    <form id="transfer-form" class="transfer-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="tx-holder">Titular de la Cuenta</label>
+                                <input type="text" id="tx-holder" required placeholder="Nombre de la empresa o titular">
+                            </div>
+                            <div class="form-group">
+                                <label for="tx-account">Número de Cuenta</label>
+                                <input type="text" id="tx-account" required placeholder="Ej. 123456789">
+                            </div>
+                            <div class="form-group">
+                                <label for="tx-routing">Número de Ruta (ABA)</label>
+                                <input type="text" id="tx-routing" maxsize="9" required placeholder="Ej. 021000021">
+                            </div>
+                            <div class="form-group">
+                                <label for="tx-bank">Banco Destino</label>
+                                <select id="tx-bank" required>
+                                    <option value="" disabled selected>Seleccione un banco</option>
+                                    <option value="Banco Popular de Puerto Rico">Banco Popular de Puerto Rico</option>
+                                    <option value="FirstBank Puerto Rico">FirstBank Puerto Rico</option>
+                                    <option value="Oriental Bank">Oriental Bank</option>
+                                    <option value="Santander Puerto Rico">Santander Puerto Rico</option>
+                                    <option value="Caribe Federal Credit Union">Caribe Federal Credit Union</option>
+                                    <option value="PenFed Credit Union">PenFed Credit Union</option>
+                                    <option value="CoopACA">CoopACA</option>
+                                    <option value="Cooperativa de Ahorro y Crédito de Puerto Rico">Cooperativa de Ahorro y Crédito de Puerto Rico</option>
+                                </select>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="tx-amount">Monto a Transferir ($)</label>
+                                <input type="number" id="tx-amount" min="1" step="0.01" required placeholder="0.00">
+                                <span class="input-help">Máximo disponible: <span id="tx-max-available">$0.00</span></span>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-secondary">Confirmar Transferencia Bancaria</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Section: Historial -->
+            <section id="sec-historial" class="content-section hidden">
+                <div class="card">
+                    <h2>Historial de Transacciones</h2>
+                    <p class="card-subtitle">Registro y estatus de fondos transferidos.</p>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Banco</th>
+                                    <th>Titular</th>
+                                    <th>Nº de Cuenta</th>
+                                    <th>Monto</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactions-log">
+                                <!-- Insertion dynamique des transactions -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Perfil -->
+            <section id="sec-perfil" class="content-section hidden">
+                <div class="card profile-card">
+                    <div class="profile-avatar">
+                        <i class='bx bx-building-house'></i>
+                    </div>
+                    <h2>Información de la Línea de Crédito</h2>
+                    <hr>
+                    <div class="profile-details">
+                        <div class="detail-item">
+                            <span class="label">Nombre Completo:</span>
+                            <span id="prof-name" class="val">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Correo Electrónico:</span>
+                            <span id="prof-email" class="val">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Teléfono:</span>
+                            <span id="prof-phone" class="val">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Monto de Crédito Otorgado:</span>
+                            <span id="prof-amount" class="val font-bold">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Plazo de Financiamiento:</span>
+                            <span id="prof-term" class="val">-</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
